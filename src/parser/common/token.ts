@@ -26,6 +26,18 @@ export const $CommonToken = {
       push_mode: 'backtick',
     }),
     End: createToken({ name: 'BacktickEnd', pattern: /`/, pop_mode: true }),
+    Brace: {
+      Start: createToken({
+        name: 'BacktickBraceStart',
+        pattern: /\$\{/,
+        push_mode: 'brace',
+      }),
+      End: createToken({
+        name: 'BacktickBraceEnd',
+        pattern: /}/,
+        pop_mode: true,
+      }),
+    }
   },
   Single: {
     Start: createToken({

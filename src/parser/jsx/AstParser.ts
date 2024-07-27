@@ -90,11 +90,12 @@ export class JsxAstParser extends EmbeddedActionsParser {
     };
   });
 
-  brace = this.RULE<ParserMethod<[], ClassNodeSource[]>>('brace', () => {
+  // 一会验一下 className={} （传空的时候会怎样）
+  attrBrace = this.RULE<ParserMethod<[], ClassNodeSource[]>>('attrBrace', () => {
     const { $T } = this;
     const nodes: ClassNodeSource[] = [];
 
-    this.CONSUME($T.Brace.Start);
+    this.CONSUME($T.Attr.Brace.Start);
     this.MANY(() =>
       nodes.push(
         this.OR([
@@ -104,7 +105,7 @@ export class JsxAstParser extends EmbeddedActionsParser {
         ]),
       ),
     );
-    this.CONSUME2($T.Brace.End);
+    this.CONSUME2($T.Attr.Brace.End);
 
     return nodes;
   });

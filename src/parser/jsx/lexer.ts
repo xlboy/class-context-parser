@@ -10,32 +10,40 @@ export function createJsxLexer($T: JsxTokenType) {
         attrValue: [
           $T.Single.Start,
           $T.Double.Start,
-          $T.Brace.Start,
+          $T.Attr.Brace.Start,
           $T.Attr.End,
         ],
-        functionValue: [
-          $T.Backtick.Start,
-          $T.Parenthesis.Start,
-          $T.Attr.End,
-        ],
-        backtick: [
-          $T.EscapedChar,
-          $T.Content,
-        ],
-        parenthesis: [
-          $T.Backtick.Start,
-          $T.Double.End,
-          $T.Single.End,
-        ],
-        single: [$T.EscapedChar, $T.Single.End, $T.Content],
-        double: [$T.EscapedChar, $T.Double.End, $T.Content],
-        brace: [
-          $T.Brace.End,
+        // className={...}
+        attrBrace: [
+          $T.Attr.Brace.End,
           $T.Single.Start,
           $T.Double.Start,
           $T.Backtick.Start,
           ...main,
         ],
+        functionValue: [
+          // tw`...`
+          $T.Backtick.Start,
+          // tw(...)
+          $T.Parenthesis.Start,
+          $T.Function.End,
+        ],
+        // `...`
+        backtick: [
+          $T.EscapedChar,
+          $T.Backtick.Brace.Start,
+          $T.Content,
+        ],
+        // (...)
+        parenthesis: [
+          $T.Backtick.Start,
+          $T.Double.End,
+          $T.Single.End,
+        ],
+        // '...'
+        single: [$T.EscapedChar, $T.Single.End, $T.Content],
+        // "..."
+        double: [$T.EscapedChar, $T.Double.End, $T.Content],
       },
       defaultMode: 'main',
     },
