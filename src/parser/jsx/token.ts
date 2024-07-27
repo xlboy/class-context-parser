@@ -3,13 +3,13 @@ import { combineRegexParts } from '../../utils/base';
 import { $CommonToken } from '../common/token';
 import { createToken as $ } from 'chevrotain';
 
-export function createJsxToken(options: Pick<JsxParserOptions, 'attrs'>) {
+export function createJsxToken(options: Required<JsxParserOptions>) {
   return {
     Attr: {
       Start: $({
         name: 'AttrStart',
         pattern: combineRegexParts([
-          '\\s',
+          '(?<=[^a-zA-z\\d])',
           `(${options.attrs.join('|')})`,
           '\\s*',
           '=',
@@ -20,6 +20,24 @@ export function createJsxToken(options: Pick<JsxParserOptions, 'attrs'>) {
       }),
       End: $({
         name: 'AttrEnd',
+        pattern: /(?<=[^])/,
+        pop_mode: true,
+      }),
+    },
+    Function: {
+      Start: $({
+        name: 'FunctionStart',
+        pattern: combineRegexParts([
+          '(?<=[^a-zA-z\\d])',
+          `(${options.functions.join('|')})`,
+          '\\s*',
+          '(?<=[`\\(])',
+        ]),
+        line_breaks: true,
+        push_mode: 'functionValue',
+      }),
+      End: $({
+        name: 'FunctionEnd',
         pattern: /(?<=[^])/,
         pop_mode: true,
       }),

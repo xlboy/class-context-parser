@@ -1,3 +1,4 @@
 export enum ClassNodeType {
-  ATTR = 'ATTR',
+  SIGNLE = 'SIGNLE',
+  Double = 'DOUBLE',
 }

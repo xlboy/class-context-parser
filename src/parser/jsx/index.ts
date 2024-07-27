@@ -1,6 +1,4 @@
-import { ClassNode } from '../types';
-import { JsxCstParser } from './CstParser';
-import { JsxCstVisitor, createJsxCstVisitor } from './CstVisitor';
+import { JsxAstParser } from './AstParser';
 import { createJsxLexer } from './lexer';
 import { JsxTokenType, createJsxToken } from './token';
 import { Lexer } from 'chevrotain';
@@ -9,38 +7,46 @@ export interface JsxParserOptions {
   /**
    * @default ['class', 'className']
    */
-  attrs: string[];
+  attrs?: string[];
+
+  /**
+   * @default ['tw', 'tx', 'cx']
+   */
+  functions?: string[];
 }
+
+const defaultOptions = {
+  attrs: ['class', 'className'],
+  functions: ['tw', 'tx', 'cx'],
+} as const satisfies JsxParserOptions;
 
 export class JsxParser {
   private readonly lexer!: Lexer;
-  private readonly cstParser!: JsxCstParser;
-  private readonly cstVisitor!: JsxCstVisitor;
+  private readonly astParser!: JsxAstParser;
   private readonly $T!: JsxTokenType;
+  private readonly options!: JsxParserOptions;
 
-  constructor(private readonly options: JsxParserOptions) {
-    this.$T = createJsxToken(options);
+  constructor(options: JsxParserOptions) {
+    this.options = { ...defaultOptions, ...options };
+    this.$T = createJsxToken(this.options);
     this.lexer = createJsxLexer(this.$T);
-    this.cstParser = new JsxCstParser(this.$T);
-    this.cstVisitor = createJsxCstVisitor(this.cstParser);
+    this.astParser = new JsxAstParser(this.$T);
   }
 
-  parse(input: string): ClassNode[] {
+  parse(input: string) {
     const lexingResult = this.lexer.tokenize(input);
 
     if (lexingResult.errors.length) {
       console.error('Lexing errors: ', lexingResult.errors);
     }
 
-    this.cstParser.input = lexingResult.tokens;
+    this.astParser.input = lexingResult.tokens;
 
-    const cst = this.cstParser.main();
+    const ast = this.astParser.main();
 
-    if (this.cstParser.errors.length > 0) {
-      throw new Error('Parsing errors: ' + this.cstParser.errors);
+    if (this.astParser.errors.length > 0) {
+      throw new Error('Parsing errors: ' + this.astParser.errors);
     }
- 
-    const ast = this.cstVisitor.visit(cst);
 
     return ast;
   }

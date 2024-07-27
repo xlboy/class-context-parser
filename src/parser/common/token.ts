@@ -11,6 +11,22 @@ export const $CommonToken = {
     }),
     End: createToken({ name: 'DoubleEnd', pattern: /"/, pop_mode: true }),
   },
+  Parenthesis: {
+    Start: createToken({
+      name: 'ParenthesisStart',
+      pattern: /\(/,
+      push_mode: 'parenthesis',
+    }),
+    End: createToken({ name: 'ParenthesisEnd', pattern: /\)/, pop_mode: true }),
+  },
+  Backtick: {
+    Start: createToken({
+      name: 'BacktickStart',
+      pattern: /`/,
+      push_mode: 'backtick',
+    }),
+    End: createToken({ name: 'BacktickEnd', pattern: /`/, pop_mode: true }),
+  },
   Single: {
     Start: createToken({
       name: 'SingleStart',
